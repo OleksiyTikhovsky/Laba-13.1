@@ -1,0 +1,104 @@
+//////////////////////////////////////////////////////////////////////////////
+// Lab_13_1.cpp
+// головний файл проекту – функція main
+#include <iostream>
+#include <math.h>
+#include <iomanip>
+#include "../dod.h"
+#include "../dod.cpp"
+#include "../sum.cpp"
+#include "../sum.h"
+#include "../var.h"
+#include "../var.cpp"
+using namespace std;
+using namespace nsDod;
+using namespace nsSum;
+using namespace nsVar;
+int main()
+{
+	cout << "x_p = "; cin >> x_p;
+	cout << "x_k = "; cin >> x_k;
+	cout << "dx = "; cin >> dx;
+	cout << "e = "; cin >> e;
+	cout << fixed;
+	cout << "-------------------------------------------------" << endl;
+	cout << "|" << setw(5) << "x" << " |"
+		<< setw(10) << "log1p(x)" << " |"
+		<< setw(7) << "S" << " |"
+		<< setw(5) << "n" << " |"
+		<< endl;
+	cout << "-------------------------------------------------" << endl;
+	x = x_p;
+	while (x <= x_k) {
+		sum(); // виклик процедури обчислення суми
+		cout << "|" << setw(7) << setprecision(2) << x << " |"
+			<< setw(10) << setprecision(5) << log1p(x) << " |"
+			<< setw(10) << setprecision(5) << S << " |"
+			<< setw(5) << n << " |"
+			<< endl;
+		x += dx;
+	}
+	cout << "-------------------------------------------------" << endl;
+	cin.get();
+	return 0;
+}
+//////////////////////////////////////////////////////////////////////////////
+// var.h
+// заголовочний файл – оголошення глобальних змінних
+#pragma once
+namespace nsVar {
+    extern int n;
+    extern double x, x_p, x_k, dx, e, a, S, R; 
+};
+//////////////////////////////////////////////////////////////////////////////
+// var.cpp
+// файл реалізації – визначення глобальних змінних
+#include "var.h"
+namespace nsVar { // добавляємо до простору імен
+	int n; // визначення змінних
+	double x, x_p, x_k, dx, e, a , S, R;
+};
+//////////////////////////////////////////////////////////////////////////////
+// dod.h
+// заголовочний файл – оголошення функції
+#pragma once
+namespace nsDod {
+	void dod();
+};
+//////////////////////////////////////////////////////////////////////////////
+// dod.cpp
+// файл реалізації функції
+#include "dod.h"
+#include "var.h" // Include var.h to access variable declarations
+using namespace nsVar;
+
+void nsDod::dod() {
+	R = -x * n / (n + 1);
+	a *= R;
+}
+//////////////////////////////////////////////////////////////////////////////
+// sum.h
+// заголовочний файл – оголошення функції
+#pragma once
+namespace nsSum {
+	void sum();
+};
+//////////////////////////////////////////////////////////////////////////////
+// sum.cpp
+// файл реалізації функції
+#include <math.h>
+#include "dod.h"
+#include "sum.h"
+#include "var.h" // підключили зовнішні оголошення змінних
+using namespace nsDod;
+using namespace nsVar;
+void nsSum::sum() {
+	n = 0;
+	a = x;
+	S = a;
+	do {
+		n++;
+		dod(); // виклик процедури обчислення доданку
+		S += a;
+	} while (fabs(a) >= e);
+}
